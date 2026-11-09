@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚽ Carreira de Craque - O Jogo Definitivo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0b0f19;
+            color: #f8fafc;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .game-container {
+            background-color: #1e293b;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+            width: 100%;
+            max-width: 680px;
+            padding: 25px;
+            box-sizing: border-box;
+        }
+        h1 {
+            text-align: center;
+            color: #38bdf8;
+            font-size: 1.8rem;
+            margin-top: 0;
+        }
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            background: #0f172a;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+        }
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            background: #1e293b;
+            padding: 6px 10px;
+            border-radius: 4px;
+        }
+        .story-box {
+            background-color: #334155;
+            padding: 15px;
+            border-radius: 8px;
+            min-height: 110px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            font-size: 1.05rem;
+        }
+        .choices-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        button {
+            background-color: #0ea5e9;
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            text-align: left;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        button:hover:not(:disabled) {
+            background-color: #0284c7;
+            transform: translateY(-1px);
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border: 1px solid #475569;
+            background-color: #0f172a;
+            color: white;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        .highlight {
+            color: #38bdf8;
+            font-weight: bold;
+        }
+        .progress-indicator {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 10px;
+        }
+        @media (max-width: 500px) {
+            .stats-panel {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <h1>⚽ Carreira de Craque</h1>
+    <div id="progress-indicator" class="progress-indicator"></div>
+    
+    <div id="stats-panel" class="stats-panel" style="display: none;">
+        <div class="stat-item"><span>Nome:</span> <strong id="p-name">-</strong></div>
+        <div class="stat-item"><span>Posição:</span> <strong id="p-pos">-</strong></div>
+        <div class="stat-item"><span>Clube:</span> <strong id="p-clube">-</strong></div>
+        <div class="stat-item"><span>Gols:</span> <strong id="p-gols">0</strong></div>
+        <div class="stat-item"><span>Assistências:</span> <strong id="p-asts">0</strong></div>
+        <div class="stat-item"><span>Títulos:</span> <strong id="p-tit">0</strong></div>
+        <div class="stat-item"><span>Atributo:</span> <strong id="p-attr">50</strong></div>
+        <div class="stat-item"><span>Técnico:</span> <strong id="p-tec">50</strong></div>
+        <div class="stat-item"><span>Torcida:</span> <strong id="p-torc">50</strong></div>
+    </div>
+
+    <div id="story-box" class="story-box">
+        Carregando jogo...
+    </div>
+
+    <div id="choices-container" class="choices-container"></div>
+</div>
+
+<script>
+    let player = {};
+    let stepIndex = 0;
+
+    const storyBox = document.getElementById("story-box");
+    const choicesContainer = document.getElementById("choices-container");
+    const statsPanel = document.getElementById("stats-panel");
+    const progressIndicator = document.getElementById("progress-indicator");
+
+    function initPlayer() {
+        player = {
+            name: "",
+            position: "",
+            clube: "",
+            gols: 0,
+            assistencias: 0,
+            titulos: 0,
+            atributo: 50,
+            tecnico: 50,
+            torcida: 50
+        };
+    }
+
+    function updateStats() {
+        document.getElementById("p-name").innerText = player.name || "-";
+        document.getElementById("p-pos").innerText = player.position || "-";
+        document.getElementById("p-clube").innerText = player.clube || "-";
+        document.getElementById("p-gols").innerText = player.gols;
+        document.getElementById("p-asts").innerText = player.assistencias;
+        document.getElementById("p-tit").innerText = player.titulos;
+        document.getElementById("p-attr").innerText = player.atributo;
+        document.getElementById("p-tec").innerText = player.tecnico;
+        document.getElementById("p-torc").innerText = player.torcida;
+    }
+
+    const gameSteps = [
+        // 1
+        {
+            type: "input",
+            title: "Criação",
+            getText: () => "Bem-vindo ao <strong>Carreira de Craque</strong>! Qual é o seu nome completo ou apelido de jogador?",
+            inputPlaceholder: "Digite seu nome...",
+            next: (val) => { player.name = val; }
+        },
+        // 2
+        {
+            type: "choices",
+            title: "Posição",
